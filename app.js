@@ -6,17 +6,23 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 import Log from './common/log';
+import config from './config/global.config';
+import Mongo from './db/db.mongo';
 
 
 /********************custom middlewares**********************/
 import toolMiddleware  from './middlewares/tool.middleware';
 import domainMiddleware from './middlewares/domain.middleware';
-import httoLoggerMiddleware from './middlewares/log.middleware';
+import httpLoggerMiddleware from './middlewares/log.middleware';
 
 /***********************custom routers****************************************/
+import Router from './routes/index'
 
 var app = express();
 Log.use(app);
+Router.use(app);
+
+const mongodb  = new Mongo(app, config)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,16 +31,19 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(config.secret));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(toolMiddleware);
 app.use(domainMiddleware);
-app.use(httoLoggerMiddleware);
+app.use(httpLoggerMiddleware);
 
+/******************************路由分发模块****************************************/
 app.use('/',function (req,res,next) {
     next();
 });
+
+/*************************错误处理模块*********************************/
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
