@@ -7,12 +7,17 @@ class UserRouter{
     constructor(router){
         Object.assign(this,{
             router,
-            userController:new UserController()
         })
         this.init();
     }
     init(){
-        this.router.get('/vi/api/user/login',this.userController.signIn)
+       //   如果以这样的方式去改变上下文的方式， 那么在这个方法指向的this，是指向该Router
+        // this.router.get('/v1/api/user/login',this.userController.signIn);
+
+        let userController=new UserController()
+        this.router.get('/v1/api/user/info',userController.getInfo.bind(userController));
+
+        this.router.get('/v1/api/user/login',userController.signIn.bind(userController));
     }
 
 }

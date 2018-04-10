@@ -90,6 +90,6 @@ UserSchema.methods.comparePassword = function(candidatePassword) {
 //             return doc.incLoginAttempts().then(() => reasons.PASSWORD_INCORRECT)
 //         })
 // }
-
-export default mongoose.model('user', UserSchema)
+//如果表名和model_name 相同， 就不需要添加表名字段即第三个参数， 否则必须要加
+export default mongoose.model('user', UserSchema,'User')
 

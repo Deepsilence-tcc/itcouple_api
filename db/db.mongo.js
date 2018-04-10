@@ -16,6 +16,7 @@ class Mongo{
     }
     init(){
         this.env    = this.app.get('env')
+        console.log(this.env);
         this.dblink = this.config['mongo'][this.env]['connectionString']
 
         const opts = {
@@ -25,9 +26,9 @@ class Mongo{
                 }
             }
         }
-        mongoose.connect(this.dblink);
-        mongoose.Promise = global.Promise;
-        // bluebird.promisify(mongoose);
+        mongoose.connect(this.dblink)
+        mongoose.Promise = bluebird;
+        bluebird.promisifyAll(mongoose);
 
         // 这段代码的意思是通过mongoose 所有的异步操作都同步化
         // mongoomise.promisifyAll(mongoose, bluebird)

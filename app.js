@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+import domain from 'domain'
 import Log from './common/log';
 import config from './config/global.config';
 import Mongo from './db/db.mongo';
@@ -33,29 +34,35 @@ app.use(cookieParser(config.secret));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(toolMiddleware);
-app.use(domainMiddleware);
 app.use(httpLoggerMiddleware);
 
 /******************************路由分发模块****************************************/
 Router(app);
 
-app.use('/',function (req,res,next) {
-    next();
-});
-
 /*************************错误处理模块*********************************/
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
 // error handler
 app.use(function(err, req, res, next) {
+    Log.logger.error(err);
    res.tools.setJson(0,'服务器错误',null)
 });
 
 process.on('uncaughtException', function (err) {
     Log.logger.error(err);
 });
+app.use(function (req,res,next) {
+    var d = domain.create();
+    //监听domain的错误事件
+    d.on('error', function (err) {
+        res.statusCode = 500;
+        Log.logger.error(err);
+        res.tools.setJson(0,'服务器错误',null)
+        d.dispose();
+    });
+
+    d.add(req);
+    d.add(res);
+    d.run(next);
+});
+
 
 module.exports = app;
