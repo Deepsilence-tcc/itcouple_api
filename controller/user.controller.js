@@ -11,7 +11,7 @@ class UserController{
 
     }
     signIn(req,res,next){
-        res.tools.setJson(0,'登陆');
+
     }
 }
 

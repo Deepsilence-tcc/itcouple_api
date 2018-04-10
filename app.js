@@ -20,8 +20,6 @@ import Router from './routes/index'
 
 var app = express();
 Log.use(app);
-Router.use(app);
-
 const mongodb  = new Mongo(app, config)
 
 // view engine setup
@@ -39,6 +37,8 @@ app.use(domainMiddleware);
 app.use(httpLoggerMiddleware);
 
 /******************************路由分发模块****************************************/
+Router(app);
+
 app.use('/',function (req,res,next) {
     next();
 });

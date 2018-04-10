@@ -6,7 +6,7 @@ import UserRouter from './user.route';
 
 let router = express.Router();
 
-exports.use = function (app) {
-    let userRouter = new UserRouter(router);
-    app.use('/user',userRouter);
+export default function (app) {
+    new UserRouter(router);
+    app.use(router);
 }

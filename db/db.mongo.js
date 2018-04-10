@@ -27,7 +27,7 @@ class Mongo{
         }
         mongoose.connect(this.dblink);
         mongoose.Promise = global.Promise;
-        bluebird.promisify(mongoose);
+        // bluebird.promisify(mongoose);
 
         // 这段代码的意思是通过mongoose 所有的异步操作都同步化
         // mongoomise.promisifyAll(mongoose, bluebird)
