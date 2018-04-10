@@ -61,3 +61,4 @@ public/images/
 public/javascripts/
 .idea
 node_modules
+public/apidoc

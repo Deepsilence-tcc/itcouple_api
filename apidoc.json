@@ -1,0 +1,10 @@
+{
+  "name": "itcouple_api",
+  "version": "0.0.0",
+  "description": "API接口文档",
+  "apidoc": {
+    "title": "API接口文档",
+    "url" : "http://localhost:3000/v1"
+  },
+  "sampleUrl": "http://localhost:3000/v1"
+}

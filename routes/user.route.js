@@ -15,9 +15,11 @@ class UserRouter{
         // this.router.get('/v1/api/user/login',this.userController.signIn);
 
         let userController=new UserController()
-        this.router.get('/v1/api/user/info',userController.getInfo.bind(userController));
+        this.router.get('/v1/api/user/info/:userName',userController.getInfo.bind(userController));
 
-        this.router.get('/v1/api/user/login',userController.signIn.bind(userController));
+        this.router.post('/v1/api/user/login',userController.signIn.bind(userController));
+
+        this.router.post('/v1/api/user/signUp',userController.signUp.bind(userController))
     }
 
 }

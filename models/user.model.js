@@ -31,6 +31,8 @@ const UserSchema = new mongoose.Schema({
         default: Date.now(),
     },
     update_at: Date,
+},{
+    versionKey:false
 })
 //判断登陆失败的定义
 const reasons = UserSchema.statics.failedLogin = {
@@ -48,48 +50,48 @@ UserSchema.methods.comparePassword = function(candidatePassword) {
     return crypto.createHash('md5').update(candidatePassword).digest('hex') === this.password
 }
 
-// UserSchema.methods.incLoginAttempts = function() {
-//     // if we have a previous lock that has expired, restart at 1
-//     if (this.lockUntil && this.lockUntil < Date.now()) {
-//         return this.updateAsync({
-//             $set: { loginAttempts: 1 },
-//             $unset: { lockUntil: 1 }
-//         })
-//     }
-//     // otherwise we're incrementing
-//     const updates = { $inc: { loginAttempts: 1 } }
-//     // lock the account if we've reached max attempts and it's not locked already
-//     if (this.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS && !this.isLocked) {
-//         updates.$set = { lockUntil: Date.now() + LOCK_TIME }
-//     }
-//     return this.updateAsync(updates)
-// }
-// UserSchema.statics.getAuthenticated = function(username, password) {
-//     return this.findOneAsync({username: username})
-//         .then(doc => {
-//             // make sure the user exists
-//             if (!doc) {
-//                 return reasons.NOT_FOUND
-//             }
-//             // check if the account is currently locked
-//             if (doc.isLocked) {
-//                 return doc.incLoginAttempts().then(() => reasons.MAX_ATTEMPTS)
-//             }
-//             // test for a matching password
-//             if (doc.comparePassword(password)) {
-//                 // if there's no lock or failed attempts, just return the doc
-//                 if (!doc.loginAttempts && !doc.lockUntil) return doc
-//                 // reset attempts and lock info
-//                 const updates = {
-//                     $set: { loginAttempts: 0 },
-//                     $unset: { lockUntil: 1 }
-//                 }
-//                 return doc.updateAsync(updates).then(() => doc)
-//             }
-//             // password is incorrect, so increment login attempts before responding
-//             return doc.incLoginAttempts().then(() => reasons.PASSWORD_INCORRECT)
-//         })
-// }
+UserSchema.methods.incLoginAttempts = function() {
+    // if we have a previous lock that has expired, restart at 1
+    if (this.lockUntil && this.lockUntil < Date.now()) {
+        return this.updateAsync({
+            $set: { loginAttempts: 1 },
+            $unset: { lockUntil: 1 }
+        })
+    }
+    // otherwise we're incrementing
+    const updates = { $inc: { loginAttempts: 1 } }
+    // lock the account if we've reached max attempts and it's not locked already
+    if (this.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS && !this.isLocked) {
+        updates.$set = { lockUntil: Date.now() + LOCK_TIME }
+    }
+    return this.updateAsync(updates)
+}
+UserSchema.statics.getAuthenticated = function(username, password) {
+    return this.findOneAsync({username: username})
+        .then(doc => {
+            // make sure the user exists
+            if (!doc) {
+                return reasons.NOT_FOUND
+            }
+            // check if the account is currently locked
+            if (doc.isLocked) {
+                return doc.incLoginAttempts().then(() => reasons.MAX_ATTEMPTS)
+            }
+            // test for a matching password
+            if (doc.comparePassword(password)) {
+                // if there's no lock or failed attempts, just return the doc
+                if (!doc.loginAttempts && !doc.lockUntil) return doc
+                // reset attempts and lock info
+                const updates = {
+                    $set: { loginAttempts: 0 },
+                    $unset: { lockUntil: 1 }
+                }
+                return doc.updateAsync(updates).then(() => doc)
+            }
+            // password is incorrect, so increment login attempts before responding
+            return doc.incLoginAttempts().then(() => reasons.PASSWORD_INCORRECT)
+        })
+}
 //如果表名和model_name 相同， 就不需要添加表名字段即第三个参数， 否则必须要加
 export default mongoose.model('user', UserSchema,'User')
 

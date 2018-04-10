@@ -16,9 +16,7 @@ class Mongo{
     }
     init(){
         this.env    = this.app.get('env')
-        console.log(this.env);
         this.dblink = this.config['mongo'][this.env]['connectionString']
-
         const opts = {
             server: {
                 socketOptions: {
